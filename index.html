@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full View Tableau Dashboard</title>
+    <!-- Import the Tableau Embedding API -->
+    <script
+      type="module"
+      src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.js"
+    ></script>
+    <style>
+      /* Basic reset for all elements to remove margins and padding */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Center the Tableau visualization container horizontally */
+      .tableau-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Placeholder div to maintain aspect ratio and spacing */
+      .maintain-space {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Container for the Tableau visualization -->
+    <div class="tableau-container"></div>
+
+    <!-- Placeholder div to maintain aspect ratio and spacing -->
+    <div class="maintain-space"></div>
+
+    <script>
+      // Get references to important DOM elements
+      const tableauContainer = document.querySelector('.tableau-container');
+      const maintainSpace = document.querySelector('.maintain-space');
+      let windowHeight, originalWidth, originalHeight, viz;
+
+      // Tableau visualization source URL
+      const src =
+        'https://public.tableau.com/views/2024-_17275460425600/sheet0?:language=zh-TW&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link';
+
+      // Function to load the Tableau dashboard
+      function loadViz() {
+        let containerWidth = tableauContainer.offsetWidth;
+
+        // Remove any existing viz elements to ensure no duplication
+        while (tableauContainer.firstChild) {
+          tableauContainer.removeChild(tableauContainer.firstChild);
+        }
+
+        // Create a new tableau-viz element and set its source URL
+        const tableauViz = document.createElement('tableau-viz');
+        tableauViz.id = 'tableauViz';
+        tableauViz.setAttribute('src', src);
+        tableauViz.setAttribute('device', 'desktop');
+
+        // Append the newly created viz element to the container
+        tableauContainer.appendChild(tableauViz);
+
+        // Get reference to the created tableau-viz element
+        viz = document.querySelector('#tableauViz');
+
+        // Add event listener for when the visualization is first interactive
+        viz.addEventListener('firstinteractive', (event) => {
+          // Store the original width and height of the viz for scaling calculations
+          originalWidth = viz.offsetWidth;
+          originalHeight =
+            viz.workbook.activeSheet._workbookImpl._activeSheetImpl
+              ._sheetInfoImpl._sheetSize.maxSize.height;
+
+          // Call the function to resize the viz
+          resizeViz();
+
+          // Add event listener to handle resizing when the window is resized
+          window.addEventListener('resize', resizeViz);
+        });
+      }
+
+      // Function to resize the visualization based on both container width and window height
+      function resizeViz() {
+        let containerWidth = tableauContainer.offsetWidth;
+        // Minus 27px for the toolbar height, if the toolbar is hidden, adjust accordingly
+        windowHeight = window.innerHeight - 27;
+
+        // Calculate the scale factor based on both width and height ratios
+        let scale = Math.min(
+          1,
+          containerWidth / originalWidth,
+          windowHeight / originalHeight
+        );
+        let afterHeight = originalHeight * scale;
+
+        // Apply the calculated scale to the container using CSS transform
+        tableauContainer.style.transform = `scale(${scale})`;
+
+        // Set container height to 0 to avoid overflow issues
+        tableauContainer.style.height = '0px';
+
+        // Adjust the height of the placeholder div to match the scaled height
+        maintainSpace.style.height = `${afterHeight}px`;
+      }
+
+      // Call the loadViz function when the page finishes loading
+      window.addEventListener('load', loadViz);
+    </script>
+  </body>
+</html>
