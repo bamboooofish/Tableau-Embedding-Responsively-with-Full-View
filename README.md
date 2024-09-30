@@ -4,7 +4,7 @@
 
 **Note**: This project is not intended to adapt the display for different Tableau "device" dashboards.
 
-## What It Looks Like - <a href="" target="_blank">Explore here</a>
+## What It Looks Like - <a href="https://bamboooofish.github.io/Tableau-Embedding-Responsively-with-Full-View/" target="_blank">Explore here</a>
 
 ![tableau](https://github.com/user-attachments/assets/1e5ba320-9346-4a80-9809-2a75682de9f3)
 
